@@ -316,4 +316,19 @@ public class MainTest {
         Main.validate(optionManager, commandLine);
     }
 
+    @Test
+    void shouldAcceptBinaryExamples() throws Throwable {
+        OptionManager optionManager = new OptionManager(outputUtils);
+        Options options = optionManager.getOptions();
+        CommandLine commandLine = parser.parse(options, new String[]{
+                "-s", "src/test/resources/broken-validation-base64-response.yaml",
+                "-o", "src/test/resources/default.json"
+        });
+
+
+        List<StyleError> errors = Main.validate(optionManager, commandLine);
+        assertEquals(0, errors.size(), errors.toString());
+
+    }
+
 }

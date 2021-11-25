@@ -1,0 +1,45 @@
+openapi: "3.0.3"
+info:
+  description: "wombat"
+  license:
+    name: "proprietary"
+  contact:
+    name: "Development Team"
+  version: 1.0.0
+servers:
+  - url: http://localhost/v1
+
+paths:
+  /wombat:
+    post:
+      summary: wombat
+      description: yes, wombats!
+      operationId: wombat
+      tags:
+        - wombat
+
+      responses:
+        200:
+          description: |
+            A (binary) PDF document was produced 
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+
+components:
+  schemas:
+    Response:
+      required:
+        - content
+      properties:
+        content:
+          description: |
+            PDF document; the first few
+            bytes of "%PDF-1.5" will be "IiVQREYtMS41"
+          type: string
+          format: byte
+          example: |
+            "VGhpc1Nob3VsZFBhc3MK"
+#            "content": "IiVQREYtMS41..."
+

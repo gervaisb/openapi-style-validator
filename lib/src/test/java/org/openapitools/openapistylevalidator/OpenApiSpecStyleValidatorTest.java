@@ -258,6 +258,51 @@ class OpenApiSpecStyleValidatorTest {
         );
     }
 
+    @Test
+    void shouldAcceptBase64Examples() {
+        OpenAPI openAPI = createValidOpenAPI()
+                .paths(OASFactory.createPaths()
+                        .addPathItem("binary-content", OASFactory.createPathItem()
+                                .POST(OASFactory.createOperation()
+                                        .operationId("createBinaryContent")
+                                        .description("Create binary (Base64 encoded) content")
+                                        .summary("Create binary")
+                                        .addTag("test")
+                                        .responses(OASFactory.createAPIResponses()
+                                                .addAPIResponse("200", OASFactory.createAPIResponse()
+                                                        .description("A binary (Base64 encoded) content")
+                                                        .content(OASFactory.createContent()
+                                                                .addMediaType("application/json", OASFactory.createMediaType()
+                                                                        .schema(OASFactory.createSchema()
+                                                                                .ref("#/components/schemas/BinaryResponse")
+                                                                        )
+                                                                )
+                                                        )
+                                                )
+                                        )
+                                )
+                        )
+                )
+                .components(OASFactory.createComponents()
+                        .addSchema("BinaryResponse", OASFactory.createSchema()
+                                .addRequired("content")
+                                .addProperty("content", OASFactory.createSchema()
+                                        .description("Some binary (Base64 encoded) content")
+                                        .type(SchemaType.STRING)
+                                        .format("byte")
+                                        .example("\"content\": \"VGhpc1Nob3VsZFBhc3MK\"")
+                                )
+                        )
+                );
+
+        OpenApiSpecStyleValidator validator = new OpenApiSpecStyleValidator(openAPI);
+
+        List<StyleError> errors = validator.validate(new ValidatorParameters());
+        assertEquals(0, errors.size(), errors.toString());
+        // *ERROR* in Model 'BinaryResponse', property 'content', field 'example' -> This field should be present and not empty
+        // *ERROR* in Model 'Response', property 'content', field 'example' -> This field should be present and not empty
+    }
+
 
     private static OpenAPI createValidOpenAPI() {
         return OASFactory.createOpenAPI()
